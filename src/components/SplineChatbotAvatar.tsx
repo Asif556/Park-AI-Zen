@@ -58,9 +58,9 @@ export function SplineChatbotAvatar({
         {showLabel && (
           <div className="absolute bottom-4 left-2 right-2 z-30 transition-opacity duration-300">
             <div className="bg-primary/95 backdrop-blur-md rounded-full px-3 py-1.5 border border-primary/30 shadow-lg">
-              <p className="text-xs font-medium text-primary-foreground text-center flex items-center justify-center gap-1">
-                <MessageCircle className="h-3 w-3" />
-                {onClickNavigate ? 'Click to Chat' : 'AI Assistant'}
+              <p className="text-sm font-medium text-primary-foreground text-center flex items-center justify-center gap-1">
+                <MessageCircle className="h-4 w-4" />
+                {onClickNavigate ? 'Lexi Ai' : 'AI Assistant'}
               </p>
             </div>
           </div>
