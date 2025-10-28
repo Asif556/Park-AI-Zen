@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4F46E5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle with gradient -->
+  <circle cx="50" cy="50" r="48" fill="url(#grad)" stroke="#fff" stroke-width="2"/>
+  
+  <!-- Parking P letter -->
+  <text x="50" y="72" font-family="Arial, sans-serif" font-size="60" font-weight="bold" fill="white" text-anchor="middle">P</text>
+  
+  <!-- Small car icon -->
+  <g transform="translate(65, 20) scale(0.4)">
+    <rect x="0" y="10" width="35" height="15" rx="3" fill="white" opacity="0.9"/>
+    <circle cx="8" cy="27" r="4" fill="white" opacity="0.9"/>
+    <circle cx="27" cy="27" r="4" fill="white" opacity="0.9"/>
+  </g>
+</svg>
