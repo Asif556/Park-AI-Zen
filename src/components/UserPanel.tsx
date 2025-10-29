@@ -196,8 +196,8 @@ const UserPanel = ({ onNavigateToChatbot }: UserPanelProps) => {
     );
   }
   return (
-    <div className="container mx-auto px-4 py-8">
-      {}
+    <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+      {/* Payment Success Animation */}
       <PaymentSuccessAnimation
         isOpen={showSuccessAnimation}
         onClose={() => setShowSuccessAnimation(false)}
@@ -206,20 +206,21 @@ const UserPanel = ({ onNavigateToChatbot }: UserPanelProps) => {
         paymentMethod={successData.paymentMethod}
         duration={successData.duration}
       />
-      {}
+
+      {/* Payment Dialog */}
       <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
-        <DialogContent>
+        <DialogContent className="max-w-[95vw] sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Select Payment Method</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-base sm:text-lg">Select Payment Method</DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm">
               Choose how you want to pay for parking
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="space-y-3 sm:space-y-4 py-3 sm:py-4">
             <div className="space-y-2">
-              <Label htmlFor="payment">Payment Method</Label>
+              <Label htmlFor="payment" className="text-xs sm:text-sm">Payment Method</Label>
               <Select value={paymentMethod} onValueChange={(value: any) => setPaymentMethod(value)}>
-                <SelectTrigger id="payment">
+                <SelectTrigger id="payment" className="text-xs sm:text-sm h-9 sm:h-10">
                   <SelectValue placeholder="Select payment method" />
                 </SelectTrigger>
                 <SelectContent>
@@ -231,13 +232,13 @@ const UserPanel = ({ onNavigateToChatbot }: UserPanelProps) => {
               </Select>
             </div>
             {exitingSession && (
-              <div className="p-4 bg-muted rounded-lg">
-                <p className="text-sm text-muted-foreground mb-1">Vehicle</p>
-                <p className="font-semibold">{exitingSession.vehicleNumber}</p>
-                {}
+              <div className="p-3 sm:p-4 bg-muted rounded-lg">
+                <p className="text-xs sm:text-sm text-muted-foreground mb-1">Vehicle</p>
+                <p className="font-semibold text-sm sm:text-base">{exitingSession.vehicleNumber}</p>
+                {/* Vehicle Type */}
                 {exitingSession.vehicleType && (
                   <div className="mt-2">
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-[10px] sm:text-xs font-medium ${
                       exitingSession.vehicleType === 'car' 
                         ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' 
                         : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
@@ -248,11 +249,11 @@ const UserPanel = ({ onNavigateToChatbot }: UserPanelProps) => {
                 )}
                 {exitingSession.charge && (
                   <>
-                    <p className="text-sm text-muted-foreground mt-3 mb-1">Amount</p>
-                    <p className="text-2xl font-bold text-primary">₹{exitingSession.charge}</p>
-                    {}
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-3 mb-1">Amount</p>
+                    <p className="text-xl sm:text-2xl font-bold text-primary">₹{exitingSession.charge}</p>
+                    {/* Pricing Info */}
                     {exitingSession.vehicleType && (
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
                         Rate: {exitingSession.vehicleType === 'car' 
                           ? '₹20 base + ₹10/hour' 
                           : exitingSession.vehicleType === 'bike'
@@ -266,80 +267,83 @@ const UserPanel = ({ onNavigateToChatbot }: UserPanelProps) => {
               </div>
             )}
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <Button
               variant="outline"
               onClick={() => {
                 setShowPaymentDialog(false);
                 setExitingSession(null);
               }}
-              className="flex-1"
+              className="flex-1 text-xs sm:text-sm h-9 sm:h-10"
             >
               Cancel
             </Button>
             <Button
               onClick={processExit}
               disabled={loading}
-              className="flex-1"
+              className="flex-1 text-xs sm:text-sm h-9 sm:h-10"
             >
-              <CreditCard className="mr-2 h-4 w-4" />
+              <CreditCard className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
               {loading ? "Processing..." : "Pay & Exit"}
             </Button>
           </div>
         </DialogContent>
       </Dialog>
-      {}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        {}
+
+      {/* Action Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        {/* Slot Availability Card */}
         {initialLoading ? (
           <SlotAvailabilitySkeleton />
         ) : slotInfo && (
-          <Card className="p-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-            <div className="flex items-center gap-2 mb-4">
-              <ParkingCircle className="h-6 w-6 text-primary" />
-              <h3 className="font-semibold text-lg">Slot Availability</h3>
+          <Card className="p-4 sm:p-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+            <div className="flex items-center gap-2 mb-3 sm:mb-4">
+              <ParkingCircle className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
+              <h3 className="font-semibold text-base sm:text-lg">Slot Availability</h3>
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               <div className="text-center">
-                <p className="text-3xl font-bold text-primary">{slotInfo.availableSlots}</p>
-                <p className="text-xs text-muted-foreground mt-1">Available</p>
+                <p className="text-2xl sm:text-3xl font-bold text-primary">{slotInfo.availableSlots}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">Available</p>
               </div>
               <div className="text-center">
-                <p className="text-3xl font-bold text-foreground">{slotInfo.totalSlots}</p>
-                <p className="text-xs text-muted-foreground mt-1">Total</p>
+                <p className="text-2xl sm:text-3xl font-bold text-foreground">{slotInfo.totalSlots}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">Total</p>
               </div>
               <div className="text-center">
-                <p className="text-3xl font-bold text-accent">{slotInfo.slotNumber}</p>
-                <p className="text-xs text-muted-foreground mt-1">Next Slot</p>
+                <p className="text-2xl sm:text-3xl font-bold text-accent">{slotInfo.slotNumber}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">Next Slot</p>
               </div>
             </div>
           </Card>
         )}
-        {}
-        <Card className="p-6 bg-gradient-to-br from-blue-500/5 to-blue-500/10 border-blue-500/20">
-          <div className="flex flex-col items-center justify-center h-full gap-4">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-500/10 rounded-full">
-              <Camera className="h-6 w-6 text-blue-500" />
+
+        {/* Capture Image Card */}
+        <Card className="p-4 sm:p-6 bg-gradient-to-br from-blue-500/5 to-blue-500/10 border-blue-500/20">
+          <div className="flex flex-col items-center justify-center h-full gap-3 sm:gap-4">
+            <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-blue-500/10 rounded-full">
+              <Camera className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500" />
             </div>
             <Button
               onClick={() => setShowCamera(true)}
-              className="w-full"
+              className="w-full text-xs sm:text-sm h-9 sm:h-10"
               disabled={slotInfo?.availableSlots === 0}
             >
-              <Camera className="mr-2 h-4 w-4" />
+              <Camera className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
               Capture Image
             </Button>
           </div>
         </Card>
-        {}
-        <Card className="p-6 bg-gradient-to-br from-green-500/5 to-green-500/10 border-green-500/20">
-          <div className="flex flex-col items-center justify-center h-full gap-4">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-green-500/10 rounded-full">
-              <Upload className="h-6 w-6 text-green-500" />
+
+        {/* Upload Image Card */}
+        <Card className="p-4 sm:p-6 bg-gradient-to-br from-green-500/5 to-green-500/10 border-green-500/20">
+          <div className="flex flex-col items-center justify-center h-full gap-3 sm:gap-4">
+            <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-green-500/10 rounded-full">
+              <Upload className="h-5 w-5 sm:h-6 sm:w-6 text-green-500" />
             </div>
             <Button
               variant="outline"
-              className="w-full"
+              className="w-full text-xs sm:text-sm h-9 sm:h-10"
               disabled={slotInfo?.availableSlots === 0}
               onClick={() => {
                 const input = document.createElement('input');
@@ -358,7 +362,7 @@ const UserPanel = ({ onNavigateToChatbot }: UserPanelProps) => {
                 input.click();
               }}
             >
-              <Upload className="mr-2 h-4 w-4" />
+              <Upload className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
               Upload Image
             </Button>
           </div>
@@ -369,66 +373,67 @@ const UserPanel = ({ onNavigateToChatbot }: UserPanelProps) => {
       {initialLoading ? (
         <PricingInfoSkeleton />
       ) : (
-        <Card className="mb-8 p-6 bg-gradient-to-r from-purple-500/5 to-pink-500/5 border-purple-500/20">
-          <div className="flex items-center gap-2 mb-4">
-            <DollarSign className="h-5 w-5 text-purple-500" />
-            <h3 className="font-semibold text-lg">Pricing Information</h3>
+        <Card className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gradient-to-r from-purple-500/5 to-pink-500/5 border-purple-500/20">
+          <div className="flex items-center gap-2 mb-3 sm:mb-4">
+            <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500 flex-shrink-0" />
+            <h3 className="font-semibold text-base sm:text-lg">Pricing Information</h3>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center gap-3 p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
-              <div className="text-2xl">🚗</div>
-              <div>
-                <p className="font-semibold text-sm">Cars (4-wheelers)</p>
-                <p className="text-xs text-muted-foreground">₹20 base charge + ₹10 per hour</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+              <div className="text-xl sm:text-2xl flex-shrink-0">🚗</div>
+              <div className="min-w-0">
+                <p className="font-semibold text-xs sm:text-sm">Cars (4-wheelers)</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground truncate">₹20 base charge + ₹10 per hour</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 p-3 bg-green-500/10 rounded-lg border border-green-500/20">
-              <div className="text-2xl">🏍️</div>
-              <div>
-                <p className="font-semibold text-sm">Bikes (2-wheelers)</p>
-                <p className="text-xs text-muted-foreground">₹10 base charge + ₹5 per hour</p>
+            <div className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+              <div className="text-xl sm:text-2xl flex-shrink-0">🏍️</div>
+              <div className="min-w-0">
+                <p className="font-semibold text-xs sm:text-sm">Bikes (2-wheelers)</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground truncate">₹10 base charge + ₹5 per hour</p>
               </div>
             </div>
           </div>
-          <p className="text-xs text-muted-foreground mt-3 text-center">
+          <p className="text-[10px] sm:text-xs text-muted-foreground mt-2 sm:mt-3 text-center">
             💡 Vehicle type is automatically detected using AI when you capture the entry photo
           </p>
         </Card>
       )}
-      {}
-      <div className="mb-4">
-        <h2 className="text-2xl font-bold text-foreground mb-2">Active Parking Sessions</h2>
-        <p className="text-muted-foreground">
+      {/* Active Sessions Header */}
+      <div className="mb-3 sm:mb-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-1 sm:mb-2">Active Parking Sessions</h2>
+        <p className="text-xs sm:text-sm text-muted-foreground">
           {initialLoading ? 'Loading sessions...' : `Currently parked vehicles (${activeSessions.length})`}
         </p>
       </div>
-      {}
+
+      {/* Active Sessions List */}
       {initialLoading ? (
         <ParkingSessionListSkeleton count={3} />
       ) : activeSessions.length === 0 ? (
-        <Card className="p-12 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-muted rounded-full mb-4">
-            <Car className="h-8 w-8 text-muted-foreground" />
+        <Card className="p-8 sm:p-12 text-center">
+          <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-muted rounded-full mb-3 sm:mb-4">
+            <Car className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-semibold mb-2">No Active Sessions</h3>
-          <p className="text-muted-foreground">
+          <h3 className="text-base sm:text-lg font-semibold mb-2">No Active Sessions</h3>
+          <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto">
             There are no vehicles currently parked. Use the capture or upload option above to register a new vehicle.
           </p>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
           {activeSessions.map((session) => {
             const VehicleIcon = getVehicleIcon(session.vehicleType);
             return (
-              <Card key={session.id} className="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <div className="text-center mb-4">
-                  <div className="inline-flex items-center justify-center w-14 h-14 bg-primary/10 rounded-full mb-3">
-                    <VehicleIcon className="h-7 w-7 text-primary" />
+              <Card key={session.id} className="p-4 sm:p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div className="text-center mb-3 sm:mb-4">
+                  <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-primary/10 rounded-full mb-2 sm:mb-3">
+                    <VehicleIcon className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
                   </div>
-                  {}
+                  {/* Vehicle Type Badge */}
                   {session.vehicleType && session.vehicleCategory && (
                     <div className="mb-2">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+                      <span className={`inline-flex items-center px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-semibold ${
                         session.vehicleType === 'car' 
                           ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' 
                           : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
@@ -440,60 +445,60 @@ const UserPanel = ({ onNavigateToChatbot }: UserPanelProps) => {
                       </span>
                     </div>
                   )}
-                  <h3 className="text-lg font-bold text-foreground">
+                  <h3 className="text-base sm:text-lg font-bold text-foreground">
                     {session.vehicleType ? session.vehicleType.toUpperCase() : 'Vehicle'}
                   </h3>
                   {session.ownerName && (
-                    <p className="text-sm text-muted-foreground">{session.ownerName}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{session.ownerName}</p>
                   )}
                 </div>
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-center gap-3 p-3 bg-secondary rounded-lg">
-                    <Calendar className="h-4 w-4 text-primary flex-shrink-0" />
+                <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
+                  <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-secondary rounded-lg">
+                    <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs text-muted-foreground">Vehicle Number</p>
-                      <p className="font-semibold text-sm truncate">{session.vehicleNumber}</p>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground">Vehicle Number</p>
+                      <p className="font-semibold text-xs sm:text-sm truncate">{session.vehicleNumber}</p>
                     </div>
                   </div>
                   {session.vehicleModel && (
-                    <div className="flex items-center gap-3 p-3 bg-secondary rounded-lg">
-                      <Car className="h-4 w-4 text-primary flex-shrink-0" />
+                    <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-secondary rounded-lg">
+                      <Car className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-muted-foreground">Model</p>
-                        <p className="font-semibold text-sm truncate">{session.vehicleModel}</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">Model</p>
+                        <p className="font-semibold text-xs sm:text-sm truncate">{session.vehicleModel}</p>
                       </div>
                     </div>
                   )}
                   {session.vehicleColor && (
-                    <div className="flex items-center gap-3 p-3 bg-secondary rounded-lg">
-                      <div className="h-4 w-4 rounded-full border-2 border-primary flex-shrink-0" style={{ backgroundColor: session.vehicleColor.toLowerCase() }} />
+                    <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-secondary rounded-lg">
+                      <div className="h-3 w-3 sm:h-4 sm:w-4 rounded-full border-2 border-primary flex-shrink-0" style={{ backgroundColor: session.vehicleColor.toLowerCase() }} />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-muted-foreground">Color</p>
-                        <p className="font-semibold text-sm truncate">{session.vehicleColor}</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">Color</p>
+                        <p className="font-semibold text-xs sm:text-sm truncate">{session.vehicleColor}</p>
                       </div>
                     </div>
                   )}
                   {session.ownerPhone && (
-                    <div className="flex items-center gap-3 p-3 bg-secondary rounded-lg">
-                      <CreditCard className="h-4 w-4 text-primary flex-shrink-0" />
+                    <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-secondary rounded-lg">
+                      <CreditCard className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-muted-foreground">Contact</p>
-                        <p className="font-semibold text-sm truncate">{session.ownerPhone}</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">Contact</p>
+                        <p className="font-semibold text-xs sm:text-sm truncate">{session.ownerPhone}</p>
                       </div>
                     </div>
                   )}
-                  <div className="flex items-center gap-3 p-3 bg-secondary rounded-lg">
-                    <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
+                  <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-secondary rounded-lg">
+                    <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
                     <div className="flex-1">
-                      <p className="text-xs text-muted-foreground">Slot Number</p>
-                      <p className="font-semibold text-sm">Slot {session.slotNumber}</p>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground">Slot Number</p>
+                      <p className="font-semibold text-xs sm:text-sm">Slot {session.slotNumber}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 p-3 bg-secondary rounded-lg">
-                    <Clock className="h-4 w-4 text-primary flex-shrink-0" />
+                  <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-secondary rounded-lg">
+                    <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs text-muted-foreground">Entry Time</p>
-                      <p className="font-semibold text-xs truncate">{formatTime(session.entryTime)}</p>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground">Entry Time</p>
+                      <p className="font-semibold text-[10px] sm:text-xs truncate">{formatTime(session.entryTime)}</p>
                     </div>
                   </div>
                 </div>
@@ -501,27 +506,27 @@ const UserPanel = ({ onNavigateToChatbot }: UserPanelProps) => {
                   <Button
                     onClick={() => handleExitParking(session)}
                     disabled={loading}
-                    className="w-full"
+                    className="w-full text-xs sm:text-sm h-8 sm:h-9"
                     size="sm"
                   >
-                    <LogOut className="mr-2 h-4 w-4" />
+                    <LogOut className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                     {loading ? "Processing..." : "Exit Parking"}
                   </Button>
                 )}
                 {(session.charge !== undefined || session.currentCharge !== undefined) && (
-                  <div className="mt-4 p-3 bg-accent/10 rounded-lg border border-accent">
+                  <div className="mt-3 sm:mt-4 p-2.5 sm:p-3 bg-accent/10 rounded-lg border border-accent">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-[10px] sm:text-xs text-muted-foreground">
                         {session.status === 'active' ? 'Current Charge' : 'Total Charge'}
                       </span>
-                      <span className="font-bold text-lg text-accent">
+                      <span className="font-bold text-base sm:text-lg text-accent">
                         ₹{session.currentCharge || session.charge}
                       </span>
                     </div>
-                    {}
+                    {/* Rate Info */}
                     {session.vehicleType && (
                       <div className="mt-2 pt-2 border-t border-accent/20">
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">
                           {session.vehicleType === 'car' 
                             ? '₹20 base + ₹10/hour' 
                             : session.vehicleType === 'bike'
@@ -538,7 +543,7 @@ const UserPanel = ({ onNavigateToChatbot }: UserPanelProps) => {
           })}
         </div>
       )}
-      {}
+      {/* Chatbot Avatar */}
       {onNavigateToChatbot && (
         <SplineChatbotAvatar 
           onClickNavigate={onNavigateToChatbot}

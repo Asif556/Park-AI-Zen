@@ -269,18 +269,19 @@ const SlotMap = ({ onNavigateToChatbot }: SlotMapProps) => {
       slots.push(i);
     }
     return (
-      <div className="space-y-6">
-        {}
-        <div className="flex items-center justify-center gap-3 mb-4">
+      <div className="space-y-4 sm:space-y-6">
+        {/* Divider */}
+        <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
-          <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border-2 border-primary/20">
-            <MapPin className="h-4 w-4 text-primary" />
-            <span className="text-sm font-bold text-primary">Parking Lot</span>
+          <div className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-primary/10 rounded-full border-2 border-primary/20">
+            <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
+            <span className="text-xs sm:text-sm font-bold text-primary whitespace-nowrap">Parking Lot</span>
           </div>
           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
         </div>
-        {}
-        <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3 sm:gap-4">
+
+        {/* Slot Grid */}
+        <div className="grid grid-cols-4 xs:grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2 sm:gap-3 lg:gap-4">
           {slots.map((slotNumber) => {
             const session = getSlotStatus(slotNumber);
             return (
@@ -298,126 +299,131 @@ const SlotMap = ({ onNavigateToChatbot }: SlotMapProps) => {
     );
   };
   return (
-    <div className="container mx-auto px-4 py-8">
-      {}
+    <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+      {/* Header Section */}
       {initialLoading ? (
         <SlotMapHeaderSkeleton />
       ) : (
         <>
-          <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground mb-1 flex items-center gap-2">
-                <MapPin className="h-6 w-6 text-primary" />
-                Parking Slot Map
+          <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="w-full sm:w-auto">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-1 flex items-center gap-2">
+                <MapPin className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
+                <span className="truncate">Parking Slot Map</span>
               </h2>
-              <p className="text-muted-foreground">Visual overview of all parking slots</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Visual overview of all parking slots</p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               <Button
                 onClick={() => setView3D(!view3D)}
                 variant={view3D ? "default" : "outline"}
                 size="sm"
-                className="gap-2"
+                className="gap-1 sm:gap-2 flex-1 sm:flex-none text-xs sm:text-sm h-8 sm:h-9"
               >
-                {view3D ? <Grid3x3 className="h-4 w-4" /> : <Box className="h-4 w-4" />}
-                {view3D ? "2D View" : "3D View"}
+                {view3D ? <Grid3x3 className="h-3 w-3 sm:h-4 sm:w-4" /> : <Box className="h-3 w-3 sm:h-4 sm:w-4" />}
+                <span className="hidden xs:inline">{view3D ? "2D View" : "3D View"}</span>
+                <span className="xs:hidden">{view3D ? "2D" : "3D"}</span>
               </Button>
               <Button
                 onClick={fetchData}
                 disabled={loading}
                 variant="outline"
                 size="sm"
+                className="flex-1 sm:flex-none text-xs sm:text-sm h-8 sm:h-9"
               >
-                <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-                Refresh
+                <RefreshCw className={`mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 ${loading ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Refresh</span>
+                <span className="sm:hidden">Refresh</span>
               </Button>
             </div>
           </div>
-          {}
+
+          {/* Statistics Cards */}
           {slotInfo && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <Card className="group p-6 bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent border-2 border-green-500/20 hover:border-green-500/40 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-green-500/20 overflow-hidden relative">
-            {}
-            <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-semibold text-muted-foreground">Available Slots</p>
-                <p className="text-4xl font-extrabold text-green-600 dark:text-green-400 tabular-nums transition-all duration-300 group-hover:scale-110">
-                  {slotInfo.availableSlots}
-                </p>
-                <p className="text-xs text-green-600/70 dark:text-green-400/70 font-medium">Ready to park</p>
-              </div>
-              <div className="p-4 bg-gradient-to-br from-green-500/20 to-green-500/10 rounded-2xl group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-green-500/20">
-                <ParkingCircle className="h-9 w-9 text-green-600 dark:text-green-400" />
-              </div>
-            </div>
-            {}
-            <div className="mt-4 h-1.5 bg-green-500/10 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-1000 shadow-sm shadow-green-500/50"
-                style={{ width: `${(slotInfo.availableSlots / slotInfo.totalSlots) * 100}%` }}
-              />
-            </div>
-          </Card>
-          <Card className="group p-6 bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border-2 border-blue-500/20 hover:border-blue-500/40 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/20 overflow-hidden relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-semibold text-muted-foreground">Free Soon</p>
-                <p className="text-4xl font-extrabold text-blue-600 dark:text-blue-400 transition-all duration-300 group-hover:scale-110">
-                  <span className="text-2xl">&lt;10</span>
-                </p>
-                <p className="text-xs text-blue-600/70 dark:text-blue-400/70 font-medium">minutes</p>
-              </div>
-              <div className="p-4 bg-gradient-to-br from-blue-500/20 to-blue-500/10 rounded-2xl group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-blue-500/20">
-                <Clock className="h-9 w-9 text-blue-600 dark:text-blue-400 animate-pulse" />
-              </div>
-            </div>
-            <div className="mt-4 flex items-center gap-2">
-              <div className="flex-1 h-1.5 bg-blue-500/10 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full w-1/3 shadow-sm shadow-blue-500/50 animate-pulse" />
-              </div>
-            </div>
-          </Card>
-          <Card className="group p-6 bg-gradient-to-br from-red-500/10 via-red-500/5 to-transparent border-2 border-red-500/20 hover:border-red-500/40 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-red-500/20 overflow-hidden relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-semibold text-muted-foreground">Occupied Slots</p>
-                <p className="text-4xl font-extrabold text-red-600 dark:text-red-400 tabular-nums transition-all duration-300 group-hover:scale-110">
-                  {slotInfo.totalSlots - slotInfo.availableSlots}
-                </p>
-                <p className="text-xs text-red-600/70 dark:text-red-400/70 font-medium">Currently parked</p>
-              </div>
-              <div className="p-4 bg-gradient-to-br from-red-500/20 to-red-500/10 rounded-2xl group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-red-500/20">
-                <Car className="h-9 w-9 text-red-600 dark:text-red-400" />
-              </div>
-            </div>
-            <div className="mt-4 h-1.5 bg-red-500/10 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-red-500 to-red-400 rounded-full transition-all duration-1000 shadow-sm shadow-red-500/50"
-                style={{ width: `${((slotInfo.totalSlots - slotInfo.availableSlots) / slotInfo.totalSlots) * 100}%` }}
-              />
-            </div>
-          </Card>
-          <Card className="group p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-2 border-primary/20 hover:border-primary/40 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-primary/20 overflow-hidden relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-semibold text-muted-foreground">Total Capacity</p>
-                <p className="text-4xl font-extrabold text-primary tabular-nums transition-all duration-300 group-hover:scale-110">
-                  {slotInfo.totalSlots}
-                </p>
-                <p className="text-xs text-primary/70 font-medium">parking spaces</p>
-              </div>
-              <div className="p-4 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-primary/20">
-                <MapPin className="h-9 w-9 text-primary" />
-              </div>
-            </div>
-            <div className="mt-4 h-1.5 bg-primary/10 rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full w-full shadow-sm shadow-primary/50" />
-            </div>
-          </Card>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+              <Card className="group p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent border-2 border-green-500/20 hover:border-green-500/40 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-green-500/20 overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative flex flex-col sm:flex-row items-center sm:items-start justify-between gap-2">
+                  <div className="space-y-0.5 sm:space-y-1 text-center sm:text-left">
+                    <p className="text-[10px] sm:text-xs lg:text-sm font-semibold text-muted-foreground">Available Slots</p>
+                    <p className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-green-600 dark:text-green-400 tabular-nums transition-all duration-300 group-hover:scale-110">
+                      {slotInfo.availableSlots}
+                    </p>
+                    <p className="text-[9px] sm:text-xs text-green-600/70 dark:text-green-400/70 font-medium">Ready to park</p>
+                  </div>
+                  <div className="p-2 sm:p-3 lg:p-4 bg-gradient-to-br from-green-500/20 to-green-500/10 rounded-xl sm:rounded-2xl group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-green-500/20">
+                    <ParkingCircle className="h-5 w-5 sm:h-7 sm:w-7 lg:h-9 lg:w-9 text-green-600 dark:text-green-400" />
+                  </div>
+                </div>
+                <div className="mt-2 sm:mt-3 lg:mt-4 h-1 sm:h-1.5 bg-green-500/10 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-1000 shadow-sm shadow-green-500/50"
+                    style={{ width: `${(slotInfo.availableSlots / slotInfo.totalSlots) * 100}%` }}
+                  />
+                </div>
+              </Card>
+
+              <Card className="group p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border-2 border-blue-500/20 hover:border-blue-500/40 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/20 overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative flex flex-col sm:flex-row items-center sm:items-start justify-between gap-2">
+                  <div className="space-y-0.5 sm:space-y-1 text-center sm:text-left">
+                    <p className="text-[10px] sm:text-xs lg:text-sm font-semibold text-muted-foreground">Free Soon</p>
+                    <p className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-blue-600 dark:text-blue-400 transition-all duration-300 group-hover:scale-110">
+                      <span className="text-lg sm:text-xl lg:text-2xl">&lt;10</span>
+                    </p>
+                    <p className="text-[9px] sm:text-xs text-blue-600/70 dark:text-blue-400/70 font-medium">minutes</p>
+                  </div>
+                  <div className="p-2 sm:p-3 lg:p-4 bg-gradient-to-br from-blue-500/20 to-blue-500/10 rounded-xl sm:rounded-2xl group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-blue-500/20">
+                    <Clock className="h-5 w-5 sm:h-7 sm:w-7 lg:h-9 lg:w-9 text-blue-600 dark:text-blue-400 animate-pulse" />
+                  </div>
+                </div>
+                <div className="mt-2 sm:mt-3 lg:mt-4 flex items-center gap-2">
+                  <div className="flex-1 h-1 sm:h-1.5 bg-blue-500/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full w-1/3 shadow-sm shadow-blue-500/50 animate-pulse" />
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="group p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-red-500/10 via-red-500/5 to-transparent border-2 border-red-500/20 hover:border-red-500/40 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-red-500/20 overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative flex flex-col sm:flex-row items-center sm:items-start justify-between gap-2">
+                  <div className="space-y-0.5 sm:space-y-1 text-center sm:text-left">
+                    <p className="text-[10px] sm:text-xs lg:text-sm font-semibold text-muted-foreground">Occupied Slots</p>
+                    <p className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-red-600 dark:text-red-400 tabular-nums transition-all duration-300 group-hover:scale-110">
+                      {slotInfo.totalSlots - slotInfo.availableSlots}
+                    </p>
+                    <p className="text-[9px] sm:text-xs text-red-600/70 dark:text-red-400/70 font-medium">Currently parked</p>
+                  </div>
+                  <div className="p-2 sm:p-3 lg:p-4 bg-gradient-to-br from-red-500/20 to-red-500/10 rounded-xl sm:rounded-2xl group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-red-500/20">
+                    <Car className="h-5 w-5 sm:h-7 sm:w-7 lg:h-9 lg:w-9 text-red-600 dark:text-red-400" />
+                  </div>
+                </div>
+                <div className="mt-2 sm:mt-3 lg:mt-4 h-1 sm:h-1.5 bg-red-500/10 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-red-500 to-red-400 rounded-full transition-all duration-1000 shadow-sm shadow-red-500/50"
+                    style={{ width: `${((slotInfo.totalSlots - slotInfo.availableSlots) / slotInfo.totalSlots) * 100}%` }}
+                  />
+                </div>
+              </Card>
+
+              <Card className="group p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-2 border-primary/20 hover:border-primary/40 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-primary/20 overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative flex flex-col sm:flex-row items-center sm:items-start justify-between gap-2">
+                  <div className="space-y-0.5 sm:space-y-1 text-center sm:text-left">
+                    <p className="text-[10px] sm:text-xs lg:text-sm font-semibold text-muted-foreground">Total Capacity</p>
+                    <p className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-primary tabular-nums transition-all duration-300 group-hover:scale-110">
+                      {slotInfo.totalSlots}
+                    </p>
+                    <p className="text-[9px] sm:text-xs text-primary/70 font-medium">parking spaces</p>
+                  </div>
+                  <div className="p-2 sm:p-3 lg:p-4 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl sm:rounded-2xl group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-lg shadow-primary/20">
+                    <MapPin className="h-5 w-5 sm:h-7 sm:w-7 lg:h-9 lg:w-9 text-primary" />
+                  </div>
+                </div>
+                <div className="mt-2 sm:mt-3 lg:mt-4 h-1 sm:h-1.5 bg-primary/10 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full w-full shadow-sm shadow-primary/50" />
+                </div>
+              </Card>
             </div>
           )}
         </>

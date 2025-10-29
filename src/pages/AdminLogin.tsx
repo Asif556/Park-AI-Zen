@@ -110,29 +110,30 @@ export default function AdminLogin() {
           />
         ))}
       </div>
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
+      <div className="relative z-10 flex items-center justify-center min-h-screen px-3 sm:px-4 lg:px-6 py-6 sm:py-8">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
           className="w-full max-w-md"
         >
+          {/* Header */}
           <motion.div
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-center mb-8"
+            className="text-center mb-6 sm:mb-8"
           >
             <motion.div
-              className="inline-flex items-center justify-center gap-2 mb-4"
+              className="inline-flex items-center justify-center gap-2 mb-3 sm:mb-4"
               animate={{ scale: [1, 1.05, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              <ShieldCheck className="w-12 h-12 text-purple-400" />
-              <Sparkles className="w-8 h-8 text-yellow-400" />
+              <ShieldCheck className="w-10 h-10 sm:w-12 sm:h-12 text-purple-400" />
+              <Sparkles className="w-7 h-7 sm:w-8 sm:h-8 text-yellow-400" />
             </motion.div>
             <motion.h1
-              className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent mb-2"
+              className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent mb-2"
               animate={{
                 backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
               }}
@@ -147,17 +148,19 @@ export default function AdminLogin() {
             >
               {SYSTEM_NAME}
             </motion.h1>
-            <p className="text-purple-300/70 text-sm">
+            <p className="text-purple-300/70 text-xs sm:text-sm">
               Secure Admin Access Portal
             </p>
           </motion.div>
+
+          {/* Form Card */}
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
             className="relative"
           >
-            <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
+            <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 sm:p-6 lg:p-8 shadow-2xl">
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-purple-500/20 blur-xl" />
               <div className="relative z-10">
                 <AnimatePresence mode="wait">
@@ -168,37 +171,37 @@ export default function AdminLogin() {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 20 }}
                       onSubmit={handleSendOTP}
-                      className="space-y-6"
+                      className="space-y-4 sm:space-y-6"
                     >
                       <div>
-                        <label className="block text-sm font-medium text-purple-200 mb-2">
+                        <label className="block text-xs sm:text-sm font-medium text-purple-200 mb-2">
                           Admin Email
                         </label>
                         <div className="relative group">
-                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400 group-focus-within:text-purple-300 transition-colors" />
+                          <Mail className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-purple-400 group-focus-within:text-purple-300 transition-colors" />
                           <Input
                             type="email"
                             placeholder="abc@gmail.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             disabled={loading}
-                            className="pl-11 bg-white/5 border-white/10 text-white placeholder:text-purple-300/40 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all"
+                            className="pl-9 sm:pl-11 bg-white/5 border-white/10 text-white placeholder:text-purple-300/40 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all text-sm sm:text-base h-10 sm:h-11"
                           />
                         </div>
                       </div>
                       <Button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium py-6 rounded-xl shadow-lg shadow-purple-500/30 transition-all hover:shadow-purple-500/50 hover:scale-[1.02]"
+                        className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium py-4 sm:py-6 rounded-xl shadow-lg shadow-purple-500/30 transition-all hover:shadow-purple-500/50 hover:scale-[1.02] text-sm sm:text-base"
                       >
                         {loading ? (
                           <>
-                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                            <Loader2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
                             Sending OTP...
                           </>
                         ) : (
                           <>
-                            <Mail className="mr-2 h-5 w-5" />
+                            <Mail className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                             Send OTP
                           </>
                         )}
@@ -211,14 +214,14 @@ export default function AdminLogin() {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
                       onSubmit={handleVerifyOTP}
-                      className="space-y-6"
+                      className="space-y-4 sm:space-y-6"
                     >
                       <div>
-                        <label className="block text-sm font-medium text-purple-200 mb-2">
+                        <label className="block text-xs sm:text-sm font-medium text-purple-200 mb-2">
                           Enter OTP
                         </label>
                         <div className="relative group">
-                          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400 group-focus-within:text-purple-300 transition-colors" />
+                          <Lock className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-purple-400 group-focus-within:text-purple-300 transition-colors" />
                           <Input
                             type="text"
                             placeholder="000000"
@@ -226,27 +229,27 @@ export default function AdminLogin() {
                             onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                             disabled={loading}
                             maxLength={6}
-                            className="pl-11 bg-white/5 border-white/10 text-white placeholder:text-purple-300/40 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all text-center tracking-widest text-2xl font-mono"
+                            className="pl-9 sm:pl-11 bg-white/5 border-white/10 text-white placeholder:text-purple-300/40 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all text-center tracking-widest text-xl sm:text-2xl font-mono h-12 sm:h-14"
                           />
                         </div>
-                        <p className="text-purple-300/60 text-xs mt-2 text-center">
+                        <p className="text-purple-300/60 text-[10px] sm:text-xs mt-2 text-center truncate px-2">
                           OTP sent to {email}
                         </p>
                       </div>
-                      <div className="space-y-3">
+                      <div className="space-y-2 sm:space-y-3">
                         <Button
                           type="submit"
                           disabled={loading}
-                          className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium py-6 rounded-xl shadow-lg shadow-purple-500/30 transition-all hover:shadow-purple-500/50 hover:scale-[1.02]"
+                          className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium py-4 sm:py-6 rounded-xl shadow-lg shadow-purple-500/30 transition-all hover:shadow-purple-500/50 hover:scale-[1.02] text-sm sm:text-base"
                         >
                           {loading ? (
                             <>
-                              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                              <Loader2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
                               Verifying...
                             </>
                           ) : (
                             <>
-                              <ShieldCheck className="mr-2 h-5 w-5" />
+                              <ShieldCheck className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                               Verify & Login
                             </>
                           )}
@@ -256,7 +259,7 @@ export default function AdminLogin() {
                           variant="ghost"
                           onClick={handleBack}
                           disabled={loading}
-                          className="w-full text-purple-300 hover:text-white hover:bg-white/5"
+                          className="w-full text-purple-300 hover:text-white hover:bg-white/5 text-sm sm:text-base h-9 sm:h-10"
                         >
                           Back to Email
                         </Button>
@@ -267,11 +270,13 @@ export default function AdminLogin() {
               </div>
             </div>
           </motion.div>
+
+          {/* Footer */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="text-center text-purple-300/50 text-xs mt-6"
+            className="text-center text-purple-300/50 text-[10px] sm:text-xs mt-4 sm:mt-6"
           >
             Secured with MongoDB Session-Based Authentication
           </motion.p>

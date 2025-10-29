@@ -131,6 +131,16 @@ All colors MUST be HSL.
     @apply transition-colors duration-200;
   }
 
+  /* Hide scrollbar while maintaining functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Custom animations */
   @keyframes fade-in {
     from {
