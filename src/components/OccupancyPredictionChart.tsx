@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { RefreshCw, TrendingUp, Activity } from 'lucide-react';
 import axios from 'axios';
 import { getFreeSlot } from '@/lib/api';
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 interface PredictionData {
   predicted_free_in_minutes: number | null;
   confidence: number;
