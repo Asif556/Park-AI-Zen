@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import UserPanel from "@/components/UserPanel";
 import AdminPanel from "@/components/AdminPanel";
 import SlotMap from "@/components/SlotMap";
+import { SplineChatbotAvatar } from "@/components/SplineChatbotAvatar";
 const Index = () => {
   const [activePanel, setActivePanel] = useState<'user' | 'admin' | 'slotmap'>('user');
   const navigate = useNavigate();
@@ -30,6 +31,15 @@ const Index = () => {
         {activePanel === 'admin' && <AdminPanel />}
         {activePanel === 'slotmap' && <SlotMap onNavigateToChatbot={handleChatbotClick} />}
       </main>
+      {/* Chatbot Avatar: show on User and Slot Map views */}
+      {(activePanel === 'user' || activePanel === 'slotmap') && (
+        <SplineChatbotAvatar
+          onClickNavigate={handleChatbotClick}
+          position="fixed"
+          size="medium"
+          showLabel
+        />
+      )}
     </div>
   );
 };

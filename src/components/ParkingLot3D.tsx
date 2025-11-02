@@ -8,8 +8,10 @@ interface ParkingLot3DProps {
 }
 export function ParkingLot3D({ totalSlots, activeSessions }: ParkingLot3DProps) {
   const [rotation, setRotation] = useState(0);
-  const getSlotStatus = (slotNumber: number) => {
-    return activeSessions.find(s => s.slotNumber === slotNumber);
+  const getSlotStatus = (slotNumber: number): ParkingToken | null => {
+    const found = activeSessions.find((s) => s.slotNumber === slotNumber);
+    // Return null explicitly when no session exists to avoid undefined !== null bug
+    return found ?? null;
   };
   const rotate = () => {
     setRotation((prev) => (prev + 45) % 360);
@@ -61,7 +63,8 @@ export function ParkingLot3D({ totalSlots, activeSessions }: ParkingLot3DProps) 
           >
             {Array.from({ length: totalSlots }, (_, i) => i + 1).map((slotNumber) => {
               const session = getSlotStatus(slotNumber);
-              const isOccupied = session !== null;
+              const isOccupied = session !== null; // true when slot has a session
+              const isFree = !isOccupied;          // easier to reason about colors
               return (
                 <div
                   key={slotNumber}
@@ -74,9 +77,9 @@ export function ParkingLot3D({ totalSlots, activeSessions }: ParkingLot3DProps) 
                   <div
                     className={`
                       relative w-full h-full rounded-lg border-2 transition-all duration-500
-                      ${isOccupied 
-                        ? 'bg-gradient-to-br from-red-500/30 to-red-600/20 border-red-500/50 shadow-lg shadow-red-500/30' 
-                        : 'bg-gradient-to-br from-green-500/30 to-green-600/20 border-green-500/50 shadow-lg shadow-green-500/30'
+                      ${isFree
+                        ? 'bg-gradient-to-br from-green-500/30 to-green-600/20 border-green-500/50 shadow-lg shadow-green-500/30'
+                        : 'bg-gradient-to-br from-red-500/30 to-red-600/20 border-red-500/50 shadow-lg shadow-red-500/30'
                       }
                       group-hover:scale-105 group-hover:shadow-2xl
                     `}
@@ -87,7 +90,7 @@ export function ParkingLot3D({ totalSlots, activeSessions }: ParkingLot3DProps) 
                   >
                     {}
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className={`text-2xl font-bold ${isOccupied ? 'text-red-300' : 'text-green-300'} opacity-50`}>
+                      <span className={`text-2xl font-bold ${isFree ? 'text-green-300' : 'text-red-300'} opacity-50`}>
                         {slotNumber}
                       </span>
                     </div>
@@ -142,7 +145,7 @@ export function ParkingLot3D({ totalSlots, activeSessions }: ParkingLot3DProps) 
                     </div>
                   )}
                   {}
-                  {!isOccupied && (
+                  {isFree && (
                     <div
                       className="absolute inset-0 flex items-center justify-center opacity-50 group-hover:opacity-100 transition-opacity"
                       style={{

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -20,7 +20,6 @@ import { Card } from "@/components/ui/card";
 
 const Landing = () => {
   const navigate = useNavigate();
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
   
   const { scrollYProgress } = useScroll({
@@ -30,27 +29,15 @@ const Landing = () => {
 
   const smoothProgress = useSpring(scrollYProgress, {
     stiffness: 100,
-    damping: 30,
+    damping: 25,
     restDelta: 0.001
   });
 
-  const opacity = useTransform(smoothProgress, [0, 0.2], [1, 0]);
-  const scale = useTransform(smoothProgress, [0, 0.2], [1, 0.8]);
-  const heroY = useTransform(smoothProgress, [0, 0.3], [0, -200]);
-  const featuresY = useTransform(smoothProgress, [0.2, 0.5], [100, 0]);
-  const statsY = useTransform(smoothProgress, [0.4, 0.7], [100, 0]);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({
-        x: (e.clientX / window.innerWidth - 0.5) * 20,
-        y: (e.clientY / window.innerHeight - 0.5) * 20,
-      });
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+  const opacity = useTransform(smoothProgress, [0, 0.15], [1, 0]);
+  const scale = useTransform(smoothProgress, [0, 0.15], [1, 0.9]);
+  const heroY = useTransform(smoothProgress, [0, 0.25], [0, -150]);
+  const featuresY = useTransform(smoothProgress, [0.1, 0.35], [80, 0]);
+  const statsY = useTransform(smoothProgress, [0.3, 0.55], [80, 0]);
 
   const features = [
     {
@@ -120,47 +107,34 @@ const Landing = () => {
 
         {/* Animated Gradient Orbs */}
         <motion.div 
-          className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full mix-blend-screen filter blur-3xl"
+          className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full mix-blend-screen filter blur-2xl"
           animate={{
-            x: [0, 100, 0],
-            y: [0, 50, 0],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
-        <motion.div 
-          className="absolute top-1/4 right-1/4 w-96 h-96 bg-cyan-500/20 rounded-full mix-blend-screen filter blur-3xl"
-          animate={{
-            x: [0, -100, 0],
-            y: [0, 100, 0],
-            scale: [1.2, 1, 1.2],
+            x: [0, 50, 0],
+            y: [0, 25, 0],
+            scale: [1, 1.1, 1],
           }}
           transition={{
             duration: 25,
             repeat: Infinity,
-            ease: "linear"
+            ease: "easeInOut"
           }}
         />
         <motion.div 
-          className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-pink-500/20 rounded-full mix-blend-screen filter blur-3xl"
+          className="absolute top-1/4 right-1/4 w-96 h-96 bg-cyan-500/20 rounded-full mix-blend-screen filter blur-2xl"
           animate={{
-            x: [0, 50, 0],
-            y: [0, -50, 0],
-            scale: [1, 1.3, 1],
+            x: [0, -50, 0],
+            y: [0, 50, 0],
+            scale: [1.1, 1, 1.1],
           }}
           transition={{
-            duration: 15,
+            duration: 30,
             repeat: Infinity,
-            ease: "linear"
+            ease: "easeInOut"
           }}
         />
 
-        {/* 3D Floating Particles */}
-        {[...Array(20)].map((_, i) => (
+        {/* 3D Floating Particles - Reduced count */}
+        {[...Array(8)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute w-2 h-2 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full"
@@ -169,13 +143,11 @@ const Landing = () => {
               top: `${Math.random() * 100}%`,
             }}
             animate={{
-              y: [0, -30, 0],
-              x: [0, Math.random() * 20 - 10, 0],
-              opacity: [0.2, 0.8, 0.2],
-              scale: [1, 1.5, 1],
+              y: [0, -20, 0],
+              opacity: [0.2, 0.6, 0.2],
             }}
             transition={{
-              duration: 3 + Math.random() * 4,
+              duration: 4 + Math.random() * 3,
               repeat: Infinity,
               delay: Math.random() * 2,
               ease: "easeInOut"
@@ -183,53 +155,30 @@ const Landing = () => {
           />
         ))}
 
-        {/* 3D Geometric Shapes */}
+        {/* 3D Geometric Shapes - Simplified */}
         <motion.div
-          className="absolute top-1/4 left-1/4 w-32 h-32 border-2 border-purple-500/30 rounded-lg"
+          className="absolute top-1/4 left-1/4 w-24 h-24 border-2 border-purple-500/20 rounded-lg"
           animate={{
-            rotateX: [0, 360],
-            rotateY: [0, 360],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          style={{
-            transformStyle: "preserve-3d",
-            perspective: "1000px"
-          }}
-        />
-        
-        <motion.div
-          className="absolute bottom-1/3 right-1/4 w-24 h-24 border-2 border-cyan-500/30"
-          animate={{
-            rotateX: [360, 0],
             rotateZ: [0, 360],
           }}
           transition={{
-            duration: 15,
+            duration: 30,
             repeat: Infinity,
             ease: "linear"
           }}
-          style={{
-            transformStyle: "preserve-3d",
-            perspective: "1000px"
-          }}
         />
 
-        {/* Animated Gradient Waves */}
+        {/* Animated Gradient Waves - Optimized */}
         <motion.div
-          className="absolute inset-0 opacity-30"
+          className="absolute inset-0 opacity-20"
           style={{
             background: "radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%)"
           }}
           animate={{
-            scale: [1, 1.5, 1],
-            opacity: [0.3, 0.5, 0.3]
+            scale: [1, 1.2, 1],
           }}
           transition={{
-            duration: 8,
+            duration: 10,
             repeat: Infinity,
             ease: "easeInOut"
           }}
@@ -241,56 +190,28 @@ const Landing = () => {
         style={{ y: heroY, opacity, scale }}
         className="relative min-h-screen flex items-center justify-center px-4"
       >
-        {/* 3D Floating Elements in Background */}
+        {/* Simplified 3D Floating Elements */}
         <div className="absolute inset-0 overflow-hidden" style={{ perspective: "1000px" }}>
-          {/* 3D Floating Cards */}
-          {[...Array(6)].map((_, i) => (
+          {/* Reduced floating cards */}
+          {[...Array(3)].map((_, i) => (
             <motion.div
               key={`card-${i}`}
               className="absolute"
               style={{
-                left: `${15 + i * 15}%`,
-                top: `${20 + (i % 3) * 25}%`,
-                transformStyle: "preserve-3d",
+                left: `${20 + i * 30}%`,
+                top: `${25 + i * 20}%`,
               }}
               animate={{
-                y: [0, -50, 0],
-                rotateX: [0, 360],
-                rotateY: [0, 180],
-                z: [0, 100, 0],
+                y: [0, -30, 0],
               }}
               transition={{
-                duration: 15 + i * 2,
+                duration: 8 + i * 2,
                 repeat: Infinity,
                 delay: i * 0.5,
                 ease: "easeInOut"
               }}
             >
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-lg border border-purple-500/30" />
-            </motion.div>
-          ))}
-
-          {/* 3D Rings */}
-          {[...Array(3)].map((_, i) => (
-            <motion.div
-              key={`ring-${i}`}
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-              style={{
-                width: `${300 + i * 150}px`,
-                height: `${300 + i * 150}px`,
-                transformStyle: "preserve-3d",
-              }}
-              animate={{
-                rotateX: [0, 360],
-                rotateZ: i % 2 === 0 ? [0, 360] : [360, 0],
-              }}
-              transition={{
-                duration: 20 + i * 5,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-            >
-              <div className="w-full h-full border-2 border-purple-500/10 rounded-full" />
             </motion.div>
           ))}
         </div>
@@ -302,38 +223,23 @@ const Landing = () => {
             transition={{ duration: 0.8 }}
             className="mb-6"
           >
-            {/* 3D Rotating Car Icon with Multiple Layers */}
-            <div className="relative inline-block mb-4" style={{ perspective: "1000px" }}>
+            {/* Simplified Car Icon */}
+            <div className="relative inline-block mb-4">
               {/* Outer Glow Ring */}
               <motion.div
                 animate={{
-                  rotate: [0, 360],
-                  scale: [1, 1.1, 1],
+                  scale: [1, 1.05, 1],
                 }}
                 transition={{
                   duration: 3,
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 rounded-full blur-xl opacity-50"
+                className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 rounded-full blur-lg opacity-50"
                 style={{ width: "120%", height: "120%", left: "-10%", top: "-10%" }}
               />
               
-              {/* Middle Ring */}
-              <motion.div
-                animate={{
-                  rotate: [360, 0],
-                }}
-                transition={{
-                  duration: 15,
-                  repeat: Infinity,
-                  ease: "linear"
-                }}
-                className="absolute inset-0 border-2 border-purple-500/30 rounded-full"
-                style={{ width: "110%", height: "110%", left: "-5%", top: "-5%" }}
-              />
-              
-              {/* 3D Card Container */}
+              {/* Main Icon Container */}
               <motion.div
                 animate={{
                   rotateY: [0, 360],
@@ -344,28 +250,11 @@ const Landing = () => {
                   ease: "linear"
                 }}
                 className="relative"
-                style={{
-                  transformStyle: "preserve-3d",
-                }}
               >
                 <div className="p-4 bg-gradient-to-br from-purple-600 via-pink-600 to-cyan-600 rounded-2xl shadow-2xl relative z-10">
                   <Car className="w-12 h-12 text-white" />
                 </div>
               </motion.div>
-              
-              {/* Inner Pulsing Circle */}
-              <motion.div
-                animate={{
-                  scale: [1, 1.3, 1],
-                  opacity: [0.5, 0, 0.5],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-                className="absolute inset-0 bg-gradient-to-br from-purple-400 to-cyan-400 rounded-full"
-              />
             </div>
           </motion.div>
 
@@ -374,9 +263,6 @@ const Landing = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent"
-            style={{
-              transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)`
-            }}
           >
             Park AI Zen
           </motion.h1>
@@ -494,46 +380,24 @@ const Landing = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 whileHover={{ 
-                  scale: 1.05, 
-                  rotateY: 5,
-                  z: 50,
-                  transition: { duration: 0.3 }
+                  scale: 1.03,
+                  transition: { duration: 0.2 }
                 }}
                 className="group"
-                style={{ transformStyle: "preserve-3d", perspective: "1000px" }}
               >
                 <Card className="p-6 bg-slate-900/50 border-slate-800 hover:border-purple-500/50 transition-all duration-300 backdrop-blur-sm h-full relative overflow-hidden">
-                  {/* 3D Depth Layer */}
+                  {/* Hover gradient */}
                   <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  
-                  {/* Animated Shine Effect */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-                    animate={{
-                      x: ["-100%", "100%"],
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      repeatDelay: 5,
-                      ease: "easeInOut"
-                    }}
-                  />
                   
                   <div className="relative z-10">
                     <motion.div 
-                      className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} p-4 mb-4 transition-all duration-300 relative`}
+                      className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} p-4 mb-4 transition-all duration-300`}
                       whileHover={{
                         scale: 1.1,
-                        rotateZ: 5,
-                        transition: { duration: 0.3 }
+                        transition: { duration: 0.2 }
                       }}
-                      style={{ transformStyle: "preserve-3d" }}
                     >
                       <feature.icon className="w-full h-full text-white" />
-                      
-                      {/* Icon Shadow */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent rounded-2xl" />
                     </motion.div>
                     <h3 className="text-2xl font-bold mb-3 text-white">{feature.title}</h3>
                     <p className="text-slate-400 leading-relaxed">{feature.description}</p>
@@ -557,9 +421,8 @@ const Landing = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
             className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 rounded-3xl p-12 backdrop-blur-sm border border-purple-500/20 relative overflow-hidden"
-            style={{ transformStyle: "preserve-3d", perspective: "1000px" }}
           >
-            {/* 3D Background Pattern */}
+            {/* Background Pattern */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute inset-0" style={{
                 backgroundImage: `
@@ -573,19 +436,6 @@ const Landing = () => {
               }} />
             </div>
 
-            {/* Animated Gradient Overlay */}
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-transparent"
-              animate={{
-                x: ["-100%", "100%"],
-              }}
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-            />
-
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 relative z-10">
               {stats.map((stat, index) => (
                 <motion.div
@@ -595,27 +445,12 @@ const Landing = () => {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{
-                    scale: 1.1,
-                    rotateY: 10,
-                    z: 30,
-                    transition: { duration: 0.3 }
+                    scale: 1.05,
+                    transition: { duration: 0.2 }
                   }}
                   className="text-center group"
-                  style={{ transformStyle: "preserve-3d" }}
                 >
-                  <motion.div
-                    animate={{
-                      rotateY: [0, 360],
-                    }}
-                    transition={{
-                      duration: 10,
-                      repeat: Infinity,
-                      ease: "linear"
-                    }}
-                    style={{ transformStyle: "preserve-3d" }}
-                  >
-                    <stat.icon className="w-12 h-12 mx-auto mb-4 text-purple-400 group-hover:text-pink-400 transition-colors" />
-                  </motion.div>
+                  <stat.icon className="w-12 h-12 mx-auto mb-4 text-purple-400 group-hover:text-pink-400 transition-colors" />
                   <div className="text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                     {stat.value}
                   </div>
@@ -642,7 +477,7 @@ const Landing = () => {
             transition={{ duration: 0.8 }}
             className="relative"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl blur-3xl opacity-50" />
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl blur-2xl opacity-50" />
             <div className="relative bg-slate-900/80 border border-purple-500/30 rounded-3xl p-12 backdrop-blur-sm">
               <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Ready to Transform Your Parking Experience?
@@ -653,34 +488,17 @@ const Landing = () => {
               <motion.div
                 whileHover={{
                   scale: 1.05,
-                  rotateX: 5,
-                  rotateY: 5,
                 }}
-                style={{ transformStyle: "preserve-3d", perspective: "1000px" }}
               >
                 <Button
                   size="lg"
                   onClick={() => navigate("/user")}
-                  className="group relative overflow-hidden bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-12 py-6 text-xl rounded-full shadow-2xl shadow-purple-500/50 transition-all duration-300 hover:shadow-purple-500/70 hover:scale-105"
+                  className="group relative overflow-hidden bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-12 py-6 text-xl rounded-full shadow-2xl shadow-purple-500/50 transition-all duration-300 hover:shadow-purple-500/70"
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     Start Your Journey
                     <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                   </span>
-                  
-                  {/* 3D Shine Effect */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                    animate={{
-                      x: ["-200%", "200%"],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      repeatDelay: 3,
-                      ease: "easeInOut"
-                    }}
-                  />
                 </Button>
               </motion.div>
             </div>

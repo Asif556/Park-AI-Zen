@@ -22,8 +22,8 @@ export function SplineChatbotAvatar({
     large: 'w-40 h-40 md:w-48 md:h-48',
   };
   const positionClasses = position === 'fixed' 
-    ? 'fixed bottom-20 right-6 md:bottom-24 md:right-8 z-40' 
-    : 'absolute bottom-4 right-4 z-10';
+    ? 'fixed bottom-6 right-6 md:bottom-8 md:right-8 z-[9999]' 
+    : 'absolute bottom-4 right-4 z-[999]';
   return (
     <div 
       className={`${positionClasses} ${sizeClasses[size]} group ${onClickNavigate ? 'cursor-pointer' : ''}`}

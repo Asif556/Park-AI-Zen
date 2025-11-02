@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import CameraCapture from "@/components/CameraCapture";
-import { SplineChatbotAvatar } from "@/components/SplineChatbotAvatar";
+// Chatbot avatar is now rendered at the page level (Index.tsx) to avoid
+// being affected by transformed/animated containers.
 import { PaymentSuccessAnimation } from "@/components/PaymentSuccessAnimation";
 import { 
   SlotAvailabilitySkeleton, 
@@ -196,6 +197,7 @@ const UserPanel = ({ onNavigateToChatbot }: UserPanelProps) => {
     );
   }
   return (
+    <>
     <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
       {/* Payment Success Animation */}
       <PaymentSuccessAnimation
@@ -543,16 +545,8 @@ const UserPanel = ({ onNavigateToChatbot }: UserPanelProps) => {
           })}
         </div>
       )}
-      {/* Chatbot Avatar */}
-      {onNavigateToChatbot && (
-        <SplineChatbotAvatar 
-          onClickNavigate={onNavigateToChatbot}
-          position="fixed"
-          size="medium"
-          showLabel={true}
-        />
-      )}
     </div>
+    </>
   );
 };
 export default UserPanel;

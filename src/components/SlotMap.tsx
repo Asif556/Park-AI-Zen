@@ -3,7 +3,6 @@ import { RefreshCw, Car, ParkingCircle, MapPin, Clock, Grid3x3, Box } from "luci
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { SplineChatbotAvatar } from "@/components/SplineChatbotAvatar";
 import { ParkingLot3D } from "@/components/ParkingLot3D";
 import { SlotGridSkeleton, SlotMapHeaderSkeleton } from "@/components/ParkingSessionSkeleton";
 import type { ParkingToken } from "@/types/parking";
@@ -569,14 +568,7 @@ const SlotMap = ({ onNavigateToChatbot }: SlotMapProps) => {
         </div>
       )}
       {}
-      {onNavigateToChatbot && (
-        <SplineChatbotAvatar 
-          onClickNavigate={onNavigateToChatbot}
-          position="fixed"
-          size="medium"
-          showLabel={true}
-        />
-      )}
+      {/* Chatbot avatar is rendered at page root (Index.tsx) so it stays fixed to viewport */}
     </div>
   );
 };

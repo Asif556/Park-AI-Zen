@@ -95,6 +95,20 @@ All colors MUST be HSL.
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
+  /* Performance optimizations */
+  * {
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Enable GPU acceleration for animations */
+  [class*="motion-"],
+  [class*="animate-"] {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
   /* Global Spline watermark hiding */
   a[href*="spline.design"],
   a[href*="spline"],
