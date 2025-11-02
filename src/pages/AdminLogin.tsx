@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { Mail, Lock, Loader2, Sparkles, ShieldCheck } from 'lucide-react';
@@ -9,10 +9,14 @@ import { sendOTP, verifyOTP, saveToken, isAuthenticated } from '@/lib/auth';
 const SYSTEM_NAME = import.meta.env.VITE_SYSTEM_NAME || 'AI Smart Parking System';
 export default function AdminLogin() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [step, setStep] = useState<'email' | 'otp'>('email');
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Get the redirect path from location state, default to '/admin-view'
+  const redirectPath = (location.state as any)?.from || '/admin-view';
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
@@ -56,7 +60,7 @@ export default function AdminLogin() {
         saveToken(response.token);
         toast.success(response.message || 'Login successful!');
         setTimeout(() => {
-          navigate('/admin-view', { replace: true });
+          navigate(redirectPath, { replace: true });
         }, 500);
       } else {
         toast.error(response.message || 'Invalid OTP');

@@ -129,7 +129,7 @@ const AdminPanel = () => {
         </div>
         <div className="flex gap-2 w-full sm:w-auto flex-wrap">
           <Button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/user')}
             variant="outline"
             size="sm"
             className="flex-1 sm:flex-none text-xs sm:text-sm"

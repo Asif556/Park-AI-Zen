@@ -1,4 +1,4 @@
-import { Car, MapPin, Moon, Sun, ShieldCheck } from "lucide-react";
+import { Car, MapPin, Moon, Sun, ShieldCheck, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -11,7 +11,11 @@ const Header = ({ activePanel, onPanelChange }: HeaderProps) => {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const handleAdminViewClick = () => {
-    navigate('/login');
+    navigate('/login', { state: { from: '/admin-view' } });
+  };
+
+  const handleEditInfoClick = () => {
+    navigate('/login', { state: { from: '/edit-info' } });
   };
   return (
     <header className="bg-card/95 border-b border-border shadow-sm sticky top-0 z-50 backdrop-blur-sm">
@@ -64,6 +68,16 @@ const Header = ({ activePanel, onPanelChange }: HeaderProps) => {
                 <ShieldCheck className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
                 <span className="hidden md:inline">Admin View</span>
                 <span className="md:hidden">Admin</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleEditInfoClick}
+                className="transition-all duration-200 text-xs sm:text-sm px-2 sm:px-3 h-8 sm:h-9 whitespace-nowrap"
+              >
+                <Settings className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
+                <span className="hidden md:inline">Edit Info</span>
+                <span className="md:hidden">Edit</span>
               </Button>
             </div>
 
