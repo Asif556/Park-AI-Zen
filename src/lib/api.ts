@@ -195,13 +195,23 @@ export async function checkSession(): Promise<ParkingSession | null> {
 /**
  * GET /api/free-slot
  * Get next available parking slot
+ * Optionally uses authentication to get area-specific slot count
  */
 export async function getFreeSlot(): Promise<FreeSlotResponse> {
+  // Try to get token for area-specific data
+  const token = localStorage.getItem('admin_token') || localStorage.getItem('employee_token');
+  
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
   const response = await fetch(`${API_BASE_URL}/free-slot`, {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers,
   });
 
   return handleResponse<FreeSlotResponse>(response);
@@ -220,6 +230,7 @@ export async function registerEntry(
     ownerPhone?: string;
     vehicleColor?: string;
     vehicleModel?: string;
+    parkingAreaId?: string;
   }
 ): Promise<ParkingSession> {
   const requestBody: any = {
@@ -233,6 +244,7 @@ export async function registerEntry(
     if (carDetails.ownerPhone) requestBody.ownerPhone = carDetails.ownerPhone;
     if (carDetails.vehicleColor) requestBody.vehicleColor = carDetails.vehicleColor;
     if (carDetails.vehicleModel) requestBody.vehicleModel = carDetails.vehicleModel;
+    if (carDetails.parkingAreaId) requestBody.parkingAreaId = carDetails.parkingAreaId;
   }
 
   const response = await fetch(`${API_BASE_URL}/entry`, {
@@ -291,6 +303,7 @@ export async function getRecords(params?: {
   vehicleNumber?: string;
   limit?: number;
   skip?: number;
+  parkingAreaId?: string;
 }): Promise<RecordsResponse> {
   const queryParams = new URLSearchParams();
   
@@ -298,17 +311,75 @@ export async function getRecords(params?: {
   if (params?.vehicleNumber) queryParams.append('vehicleNumber', params.vehicleNumber);
   if (params?.limit) queryParams.append('limit', params.limit.toString());
   if (params?.skip) queryParams.append('skip', params.skip.toString());
+  if (params?.parkingAreaId) queryParams.append('parkingAreaId', params.parkingAreaId);
 
   const url = `${API_BASE_URL}/records${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
 
+  // Get token for authentication
+  const token = localStorage.getItem('admin_token');
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const response = await fetch(url, {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers,
   });
 
   return handlePaginatedResponse<RecordsResponse>(response);
+}
+
+/**
+ * GET /api/parking-area/stats
+ * Get parking area statistics (total, filled, free slots)
+ */
+export async function getParkingAreaStats(parkingAreaId?: string): Promise<{
+  success: boolean;
+  data: {
+    parking_area_id: string;
+    parking_area_name: string;
+    total_slots: number;
+    filled_slots: number;
+    free_slots: number;
+    occupancy_percentage: number;
+  };
+}> {
+  const queryParams = new URLSearchParams();
+  if (parkingAreaId) {
+    queryParams.append('parkingAreaId', parkingAreaId);
+  }
+
+  const url = `${API_BASE_URL}/parking-area/stats${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+
+  // Get token for authentication
+  const token = localStorage.getItem('admin_token');
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers,
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new ApiError(
+      response.status,
+      error.error || 'STATS_ERROR',
+      error.message || 'Failed to fetch parking area statistics'
+    );
+  }
+
+  return response.json();
 }
 
 /**
@@ -521,4 +592,286 @@ export async function enhancePrompt(prompt: string): Promise<{ enhancedPrompt: s
   }
 
   return data;
+}
+
+// ================================================
+// 👥 EMPLOYEE MANAGEMENT API
+// ================================================
+
+import type {
+  Employee,
+  CreateEmployeeRequest,
+  EmployeeRegisterRequest,
+  EmployeeLoginRequest,
+  EmployeeLoginResponse,
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
+  ChangePasswordRequest,
+  ActivityLog
+} from '@/types/employee';
+
+/**
+ * POST /api/admin/create-employee
+ * Create a new employee (admin only)
+ */
+export async function createEmployee(data: CreateEmployeeRequest, token: string): Promise<{ success: boolean; data: Employee }> {
+  const response = await fetch(`${API_BASE_URL}/admin/create-employee`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+  
+  if (!response.ok) {
+    throw new ApiError(
+      response.status,
+      result.error || 'CREATE_EMPLOYEE_ERROR',
+      result.message || 'Failed to create employee'
+    );
+  }
+
+  return result;
+}
+
+/**
+ * GET /api/admin/employees
+ * Get all employees (admin only)
+ */
+export async function getEmployees(token: string): Promise<{ success: boolean; data: Employee[]; count: number }> {
+  const response = await fetch(`${API_BASE_URL}/admin/employees`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
+  });
+
+  const result = await response.json();
+  
+  if (!response.ok) {
+    throw new ApiError(
+      response.status,
+      result.error || 'GET_EMPLOYEES_ERROR',
+      result.message || 'Failed to fetch employees'
+    );
+  }
+
+  return result;
+}
+
+/**
+ * DELETE /api/admin/employees/{employee_id}
+ * Delete an employee (admin only)
+ */
+export async function deleteEmployee(employeeId: string, token: string): Promise<{ success: boolean; message: string }> {
+  const response = await fetch(`${API_BASE_URL}/admin/employees/${employeeId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
+  });
+
+  const result = await response.json();
+  
+  if (!response.ok) {
+    throw new ApiError(
+      response.status,
+      result.error || 'DELETE_EMPLOYEE_ERROR',
+      result.message || 'Failed to delete employee'
+    );
+  }
+
+  return result;
+}
+
+/**
+ * PUT /api/admin/employees/{employee_id}/status
+ * Update employee status (admin only)
+ */
+export async function updateEmployeeStatus(employeeId: string, status: string, token: string): Promise<{ success: boolean; message: string }> {
+  const response = await fetch(`${API_BASE_URL}/admin/employees/${employeeId}/status`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ status }),
+  });
+
+  const result = await response.json();
+  
+  if (!response.ok) {
+    throw new ApiError(
+      response.status,
+      result.error || 'UPDATE_STATUS_ERROR',
+      result.message || 'Failed to update employee status'
+    );
+  }
+
+  return result;
+}
+
+/**
+ * POST /api/employee/register
+ * Employee self-registration
+ */
+export async function employeeRegister(data: EmployeeRegisterRequest): Promise<{ success: boolean; message: string; data: Employee }> {
+  const response = await fetch(`${API_BASE_URL}/employee/register`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+  
+  if (!response.ok) {
+    throw new ApiError(
+      response.status,
+      result.error || 'REGISTER_ERROR',
+      result.message || 'Registration failed'
+    );
+  }
+
+  return result;
+}
+
+/**
+ * POST /api/employee/login
+ * Employee login
+ */
+export async function employeeLogin(data: EmployeeLoginRequest): Promise<EmployeeLoginResponse> {
+  const response = await fetch(`${API_BASE_URL}/employee/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+  
+  if (!response.ok) {
+    throw new ApiError(
+      response.status,
+      result.error || 'LOGIN_ERROR',
+      result.message || 'Login failed'
+    );
+  }
+
+  return result;
+}
+
+/**
+ * POST /api/auth/forgot-password
+ * Request password reset
+ */
+export async function forgotPassword(data: ForgotPasswordRequest): Promise<{ success: boolean; message: string }> {
+  const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+  
+  if (!response.ok) {
+    throw new ApiError(
+      response.status,
+      result.error || 'FORGOT_PASSWORD_ERROR',
+      result.message || 'Failed to send reset email'
+    );
+  }
+
+  return result;
+}
+
+/**
+ * POST /api/auth/reset-password
+ * Reset password using token
+ */
+export async function resetPassword(data: ResetPasswordRequest): Promise<{ success: boolean; message: string }> {
+  const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+  
+  if (!response.ok) {
+    throw new ApiError(
+      response.status,
+      result.error || 'RESET_PASSWORD_ERROR',
+      result.message || 'Failed to reset password'
+    );
+  }
+
+  return result;
+}
+
+/**
+ * POST /api/employee/change-password
+ * Change password (requires current password)
+ */
+export async function changePassword(data: ChangePasswordRequest, token: string): Promise<{ success: boolean; message: string }> {
+  const response = await fetch(`${API_BASE_URL}/employee/change-password`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+  
+  if (!response.ok) {
+    throw new ApiError(
+      response.status,
+      result.error || 'CHANGE_PASSWORD_ERROR',
+      result.message || 'Failed to change password'
+    );
+  }
+
+  return result;
+}
+
+/**
+ * GET /api/activity-logs
+ * Get activity logs (admin and manager only)
+ */
+export async function getActivityLogs(
+  token: string,
+  params?: { limit?: number; skip?: number; user_type?: string; user_id?: string; action?: string }
+): Promise<{ success: boolean; data: ActivityLog[]; meta: any }> {
+  const queryString = new URLSearchParams(params as any).toString();
+  const url = `${API_BASE_URL}/activity-logs${queryString ? '?' + queryString : ''}`;
+  
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
+  });
+
+  const result = await response.json();
+  
+  if (!response.ok) {
+    throw new ApiError(
+      response.status,
+      result.error || 'GET_LOGS_ERROR',
+      result.message || 'Failed to fetch activity logs'
+    );
+  }
+
+  return result;
 }

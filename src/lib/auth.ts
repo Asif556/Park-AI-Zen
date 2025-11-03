@@ -88,3 +88,87 @@ export const isAuthenticated = (): boolean => {
 export const logout = (): void => {
   removeToken();
 };
+
+/**
+ * Store employee JWT token in localStorage
+ */
+export const saveEmployeeToken = (token: string): void => {
+  localStorage.setItem('employee_token', token);
+};
+
+/**
+ * Get employee JWT token from localStorage
+ */
+export const getEmployeeToken = (): string | null => {
+  return localStorage.getItem('employee_token');
+};
+
+/**
+ * Remove employee JWT token from localStorage
+ */
+export const removeEmployeeToken = (): void => {
+  localStorage.removeItem('employee_token');
+};
+
+/**
+ * Check if employee is authenticated
+ */
+export const isEmployeeAuthenticated = (): boolean => {
+  const token = getEmployeeToken();
+  if (!token) return false;
+
+  try {
+    // Decode JWT token to check expiration
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const expiration = payload.exp * 1000; // Convert to milliseconds
+    
+    if (Date.now() >= expiration) {
+      removeEmployeeToken();
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    removeEmployeeToken();
+    return false;
+  }
+};
+
+/**
+ * Logout employee by removing token
+ */
+export const logoutEmployee = (): void => {
+  removeEmployeeToken();
+};
+
+/**
+ * Get the current user's token (admin or employee)
+ * Checks both admin_token and employee_token
+ */
+export const getCurrentToken = (): string | null => {
+  // First check for employee token
+  const employeeToken = getEmployeeToken();
+  if (employeeToken) return employeeToken;
+  
+  // Then check for admin token
+  const adminToken = getToken();
+  if (adminToken) return adminToken;
+  
+  return null;
+};
+
+/**
+ * Get the current user type based on stored token
+ */
+export const getCurrentUserType = (): 'admin' | 'employee' | null => {
+  const userType = localStorage.getItem('user_type');
+  if (userType === 'employee' || userType === 'admin') {
+    return userType;
+  }
+  
+  // Fallback: check which token exists
+  if (getEmployeeToken()) return 'employee';
+  if (getToken()) return 'admin';
+  
+  return null;
+};

@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { getToken } from '@/lib/auth';
+import { getToken, getCurrentToken } from '@/lib/auth';
 
 const SYSTEM_NAME = import.meta.env.VITE_SYSTEM_NAME || 'AI Smart Parking System';
 const API_URL = import.meta.env.VITE_API_URL;
@@ -56,7 +56,7 @@ export default function EditInfo() {
   const fetchSettings = async () => {
     setLoading(true);
     try {
-      const token = getToken();
+      const token = getCurrentToken(); // Use getCurrentToken to support both admin and employee
       const response = await fetch(`${API_URL}/parking-settings`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -96,7 +96,7 @@ export default function EditInfo() {
 
     setSaving(true);
     try {
-      const token = getToken();
+      const token = getCurrentToken(); // Use getCurrentToken to support both admin and employee
       const response = await fetch(`${API_URL}/parking-settings`, {
         method: 'PUT',
         headers: {
@@ -109,7 +109,9 @@ export default function EditInfo() {
       if (response.ok) {
         toast.success('Settings updated successfully!');
         setTimeout(() => {
-          navigate('/admin-view');
+          const adminData = JSON.parse(localStorage.getItem('admin_data') || '{}');
+          const parkingAreaId = adminData.parking_area_id || 'PA001';
+          navigate(`/admin-view/${parkingAreaId}`);
         }, 1500);
       } else {
         const data = await response.json();
@@ -171,7 +173,11 @@ export default function EditInfo() {
                 <p className="text-muted-foreground text-xs">Administrator</p>
               </div>
               <Button
-                onClick={() => navigate('/admin-view')}
+                onClick={() => {
+                  const adminData = JSON.parse(localStorage.getItem('admin_data') || '{}');
+                  const parkingAreaId = adminData.parking_area_id || 'PA001';
+                  navigate(`/admin-view/${parkingAreaId}`);
+                }}
                 variant="ghost"
                 className="text-muted-foreground hover:text-foreground"
               >
@@ -320,7 +326,11 @@ export default function EditInfo() {
                       )}
                     </Button>
                     <Button
-                      onClick={() => navigate('/admin-view')}
+                      onClick={() => {
+                        const adminData = JSON.parse(localStorage.getItem('admin_data') || '{}');
+                        const parkingAreaId = adminData.parking_area_id || 'PA001';
+                        navigate(`/admin-view/${parkingAreaId}`);
+                      }}
                       variant="outline"
                       className="border-border"
                       disabled={saving}

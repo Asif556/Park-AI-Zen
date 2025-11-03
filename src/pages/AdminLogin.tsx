@@ -58,6 +58,7 @@ export default function AdminLogin() {
       const response = await verifyOTP(email, otp);
       if (response.success && response.token) {
         saveToken(response.token);
+        localStorage.setItem('user_type', 'admin'); // Set user type
         toast.success(response.message || 'Login successful!');
         setTimeout(() => {
           navigate(redirectPath, { replace: true });

@@ -13,7 +13,9 @@ import {
   CreditCard,
   ChevronRight,
   Star,
-  CheckCircle2
+  CheckCircle2,
+  Crown,
+  User
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -281,28 +283,74 @@ const Landing = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8"
           >
+            {/* Premium Super Admin Button */}
             <Button
               size="lg"
-              onClick={() => navigate("/user")}
-              className="group relative overflow-hidden bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg rounded-full shadow-2xl shadow-purple-500/50 transition-all duration-300 hover:shadow-purple-500/70 hover:scale-105"
+              onClick={() => navigate("/super-admin/login")}
+              className="group relative overflow-hidden bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 hover:from-purple-700 hover:via-violet-700 hover:to-indigo-700 text-white px-10 py-7 text-lg font-bold rounded-2xl shadow-2xl shadow-purple-500/60 transition-all duration-500 hover:shadow-purple-500/90 hover:scale-110 border-2 border-purple-300/50 hover:border-purple-200"
             >
-              <span className="relative z-10 flex items-center gap-2">
-                Get Started
-                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <span className="absolute inset-0 bg-gradient-to-r from-violet-500 via-purple-500 to-violet-500 animate-pulse opacity-20"></span>
+              <span className="absolute -top-1 -right-1 w-4 h-4">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-purple-300 opacity-75 animate-ping"></span>
+                <span className="absolute inline-flex rounded-full h-4 w-4 bg-purple-400"></span>
               </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-pink-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <span className="relative z-10 flex items-center gap-3">
+                <Sparkles className="w-6 h-6 group-hover:rotate-12 transition-transform animate-pulse" />
+                Super Admin
+                <Sparkles className="w-6 h-6 group-hover:-rotate-12 transition-transform animate-pulse" />
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-violet-400 via-purple-400 to-violet-400 opacity-0 group-hover:opacity-40 transition-opacity duration-300" />
             </Button>
 
+            {/* Premium Admin Login Button */}
             <Button
               size="lg"
-              variant="outline"
-              className="px-8 py-6 text-lg rounded-full border-2 border-purple-500/50 hover:border-purple-500 hover:bg-purple-500/10 transition-all duration-300"
+              onClick={() => navigate("/login")}
+              className="group relative overflow-hidden bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 hover:from-amber-600 hover:via-yellow-600 hover:to-amber-600 text-slate-900 px-10 py-7 text-lg font-bold rounded-2xl shadow-2xl shadow-amber-500/60 transition-all duration-500 hover:shadow-amber-500/90 hover:scale-110 border-2 border-amber-300/50 hover:border-amber-200"
             >
-              <Sparkles className="w-5 h-5 mr-2" />
-              Learn More
+              <span className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-400 animate-pulse opacity-20"></span>
+              <span className="absolute -top-1 -right-1 w-4 h-4">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-amber-200 opacity-75 animate-ping"></span>
+                <span className="absolute inline-flex rounded-full h-4 w-4 bg-amber-300"></span>
+              </span>
+              <span className="relative z-10 flex items-center gap-3">
+                <Crown className="w-6 h-6 group-hover:rotate-12 transition-transform animate-pulse" />
+                Admin Portal
+                <Crown className="w-6 h-6 group-hover:-rotate-12 transition-transform animate-pulse" />
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-300 via-amber-300 to-yellow-300 opacity-0 group-hover:opacity-40 transition-opacity duration-300" />
             </Button>
+
+            {/* Employee Login Button */}
+            <Button
+              size="lg"
+              onClick={() => navigate("/employee/login")}
+              className="group relative overflow-hidden bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-8 py-6 text-lg rounded-full shadow-2xl shadow-blue-500/50 transition-all duration-300 hover:shadow-blue-500/70 hover:scale-105"
+            >
+              <span className="relative z-10 flex items-center gap-2">
+                <User className="w-5 h-5" />
+                Employee Login
+                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </Button>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="flex gap-4 justify-center items-center text-sm text-slate-400"
+          >
+            <span>New employee?</span>
+            <button
+              onClick={() => navigate("/employee/register")}
+              className="text-purple-400 hover:text-purple-300 underline underline-offset-4 transition-colors"
+            >
+              Register here
+            </button>
           </motion.div>
 
           <motion.div

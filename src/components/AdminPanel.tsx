@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { RefreshCw, Power, AlertCircle, Search, X, Home } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { RefreshCw, Power, AlertCircle, Search, X, LogOut, Users, Lock, ParkingSquare, CheckCircle, XCircle } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -14,13 +15,25 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import type { ParkingToken } from "@/types/parking";
-import { getRecords, restartSystem, ApiError } from "@/lib/api";
+import { getRecords, restartSystem, getParkingAreaStats, ApiError } from "@/lib/api";
 import { AIInsights } from "@/components/AIInsights";
 import { AIInsightsChat } from "@/components/AIInsightsChat";
 import { PredictionControlPanel } from "@/components/PredictionControlPanel";
 import { AdminTableSkeleton } from "@/components/ParkingSessionSkeleton";
+import EmployeeManagement from "@/components/EmployeeManagement";
+
+interface ParkingStats {
+  parking_area_id: string;
+  parking_area_name: string;
+  total_slots: number;
+  filled_slots: number;
+  free_slots: number;
+  occupancy_percentage: number;
+}
+
 const AdminPanel = () => {
   const navigate = useNavigate();
+  const { areaId } = useParams<{ areaId?: string }>();
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [records, setRecords] = useState<ParkingToken[]>([]);
@@ -28,15 +41,33 @@ const AdminPanel = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [parkingStats, setParkingStats] = useState<ParkingStats | null>(null);
+  const [statsLoading, setStatsLoading] = useState(false);
   const recordsPerPage = 100;
   useEffect(() => {
     const initializeData = async () => {
       setInitialLoading(true);
-      await fetchRecords();
+      await Promise.all([fetchRecords(), fetchParkingStats()]);
       setInitialLoading(false);
     };
     initializeData();
-  }, [currentPage]);
+  }, [currentPage, areaId]);
+
+  const fetchParkingStats = async () => {
+    setStatsLoading(true);
+    try {
+      const response = await getParkingAreaStats(areaId);
+      if (response.success) {
+        setParkingStats(response.data);
+      }
+    } catch (error) {
+      console.error("[AdminPanel] Error fetching parking stats:", error);
+      // Don't show error toast for stats, just log it
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
   const fetchRecords = async (vehicleNumber?: string) => {
     setLoading(true);
     try {
@@ -44,9 +75,16 @@ const AdminPanel = () => {
         limit: recordsPerPage,
         skip: currentPage * recordsPerPage
       };
+      
+      // Add parking area filter if available
+      if (areaId) {
+        params.parkingAreaId = areaId;
+      }
+      
       if (vehicleNumber) {
         params.vehicleNumber = vehicleNumber;
       }
+      
       const response = await getRecords(params);
       console.log('[AdminPanel] API Response:', response);
       const recordsData = Array.isArray(response) ? response : (response.data || []);
@@ -54,8 +92,8 @@ const AdminPanel = () => {
       setRecords(recordsData);
       setTotalRecords(meta.total || 0);
       const message = vehicleNumber 
-        ? `Found ${meta.returned || recordsData.length} records for vehicle ${vehicleNumber}`
-        : `Loaded ${meta.returned || recordsData.length} of ${meta.total || recordsData.length} records`;
+        ? `Found ${meta.returned || recordsData.length} records for vehicle ${vehicleNumber}${areaId ? ` in ${areaId}` : ''}`
+        : `Loaded ${meta.returned || recordsData.length} of ${meta.total || recordsData.length} records${areaId ? ` for ${areaId}` : ''}`;
       toast.success("Records refreshed successfully", {
         description: message
       });
@@ -124,22 +162,132 @@ const AdminPanel = () => {
       {/* Header Section */}
       <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <div className="w-full sm:w-auto">
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-1">Parking Records</h2>
-          <p className="text-sm sm:text-base text-muted-foreground">Monitor all active and completed parking sessions</p>
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-1">
+            Admin Panel {areaId && <span className="text-amber-500">- {areaId}</span>}
+          </h2>
+          <p className="text-sm sm:text-base text-muted-foreground">
+            Manage parking operations and employees{areaId ? ` for ${areaId}` : ''}
+          </p>
         </div>
         <div className="flex gap-2 w-full sm:w-auto flex-wrap">
           <Button
-            onClick={() => navigate('/user')}
+            onClick={() => navigate('/admin/change-password')}
             variant="outline"
             size="sm"
             className="flex-1 sm:flex-none text-xs sm:text-sm"
           >
-            <Home className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden md:inline">Back to Home</span>
-            <span className="md:hidden">Home</span>
+            <Lock className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden md:inline">Change Password</span>
+            <span className="md:hidden">Password</span>
           </Button>
           <Button
-            onClick={() => fetchRecords()}
+            onClick={() => {
+              localStorage.removeItem('admin_token');
+              localStorage.removeItem('admin_data');
+              navigate('/login');
+            }}
+            variant="outline"
+            size="sm"
+            className="flex-1 sm:flex-none text-xs sm:text-sm text-red-600 hover:text-red-700 hover:bg-red-50"
+          >
+            <LogOut className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden md:inline">Logout</span>
+            <span className="md:hidden">Logout</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* Tabs for different sections */}
+      <Tabs defaultValue="parking" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsTrigger value="parking">Parking Records</TabsTrigger>
+          <TabsTrigger value="employees">
+            <Users className="mr-2 h-4 w-4" />
+            Employee Management
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Parking Records Tab */}
+        <TabsContent value="parking" className="space-y-4">
+          {/* Parking Stats Cards */}
+          {parkingStats && (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3 sm:gap-4 mb-4">
+              <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-blue-700 dark:text-blue-300 flex items-center gap-2">
+                    <ParkingSquare className="h-4 w-4" />
+                    Total Slots
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl sm:text-3xl font-bold text-blue-900 dark:text-blue-100">
+                    {parkingStats.total_slots}
+                  </div>
+                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                    {parkingStats.parking_area_name}
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900 border-red-200 dark:border-red-800">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-red-700 dark:text-red-300 flex items-center gap-2">
+                    <XCircle className="h-4 w-4" />
+                    Filled Slots
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl sm:text-3xl font-bold text-red-900 dark:text-red-100">
+                    {parkingStats.filled_slots}
+                  </div>
+                  <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+                    Currently occupied
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border-green-200 dark:border-green-800">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-green-700 dark:text-green-300 flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4" />
+                    Free Slots
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl sm:text-3xl font-bold text-green-900 dark:text-green-100">
+                    {parkingStats.free_slots}
+                  </div>
+                  <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                    Available now
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 border-purple-200 dark:border-purple-800">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-purple-700 dark:text-purple-300 flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4" />
+                    Occupancy
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl sm:text-3xl font-bold text-purple-900 dark:text-purple-100">
+                    {parkingStats.occupancy_percentage}%
+                  </div>
+                  <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
+                    Current utilization
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          <div className="flex gap-2">
+          <Button
+            onClick={() => {
+              fetchRecords();
+              fetchParkingStats();
+            }}
             disabled={loading}
             variant="outline"
             size="sm"
@@ -160,10 +308,9 @@ const AdminPanel = () => {
             <span className="md:hidden">Restart</span>
           </Button>
         </div>
-      </div>
 
-      {/* Search Section */}
-      <Card className="p-3 sm:p-4 mb-4 sm:mb-6">
+        {/* Search Section */}
+        <Card className="p-3 sm:p-4 mb-4 sm:mb-6">
         <div className="flex flex-col sm:flex-row gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
@@ -349,16 +496,23 @@ const AdminPanel = () => {
           )}
         </div>
       </Card>
-      {/* Footer Info */}
-      <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row items-start gap-2 p-3 sm:p-4 bg-muted/50 rounded-lg border border-border">
-        <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-        <div className="text-xs sm:text-sm">
-          <p className="font-medium text-foreground mb-1">Connected to Backend API</p>
-          <p className="text-muted-foreground">
-            Showing {records.length} of {totalRecords} records • Search enabled • Endpoints: /api/records, /api/record, /api/entry, /api/exit
-          </p>
-        </div>
-      </div>
+          {/* Footer Info */}
+          <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row items-start gap-2 p-3 sm:p-4 bg-muted/50 rounded-lg border border-border">
+            <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+            <div className="text-xs sm:text-sm">
+              <p className="font-medium text-foreground mb-1">Connected to Backend API</p>
+              <p className="text-muted-foreground">
+                Showing {records.length} of {totalRecords} records • Search enabled • Endpoints: /api/records, /api/record, /api/entry, /api/exit
+              </p>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Employee Management Tab */}
+        <TabsContent value="employees">
+          <EmployeeManagement />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
