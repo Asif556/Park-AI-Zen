@@ -209,14 +209,38 @@ const SlotItem = ({
 };
 interface SlotMapProps {
   onNavigateToChatbot?: () => void;
+  areaId?: string;
 }
-const SlotMap = ({ onNavigateToChatbot }: SlotMapProps) => {
+
+const SlotMap = ({ onNavigateToChatbot, areaId }: SlotMapProps) => {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [activeSessions, setActiveSessions] = useState<ParkingToken[]>([]);
   const [slotInfo, setSlotInfo] = useState<{ slotNumber: number; totalSlots: number; availableSlots: number } | null>(null);
   const [view3D, setView3D] = useState(false);
+  const [parkingAreaId, setParkingAreaId] = useState<string | undefined>(areaId);
   const { settings } = usePredictionSettings();
+
+  useEffect(() => {
+    // Priority: 1. URL param (areaId), 2. localStorage (employee_data), 3. undefined (public user)
+    if (areaId) {
+      setParkingAreaId(areaId);
+      console.log('[SlotMap] Using parking area from URL:', areaId);
+    } else {
+      // Get parking area ID from employee data if logged in as employee
+      const employeeData = localStorage.getItem('employee_data');
+      if (employeeData) {
+        try {
+          const employee = JSON.parse(employeeData);
+          setParkingAreaId(employee.parking_area_id);
+          console.log('[SlotMap] Using parking area from employee data:', employee.parking_area_id);
+        } catch (err) {
+          console.error('[SlotMap] Failed to parse employee data:', err);
+        }
+      }
+    }
+  }, [areaId]);
+
   useEffect(() => {
     const initializeData = async () => {
       setInitialLoading(true);
@@ -224,21 +248,31 @@ const SlotMap = ({ onNavigateToChatbot }: SlotMapProps) => {
       setInitialLoading(false);
     };
     initializeData();
+
     const interval = setInterval(() => {
       fetchData();
     }, 30000);
+
     return () => clearInterval(interval);
-  }, []);
+  }, [parkingAreaId]);  // Re-fetch when parking area changes
+
   const fetchData = async () => {
     setLoading(true);
     try {
+      const params: any = { status: 'active', limit: 100 };
+      if (parkingAreaId) {
+        params.parkingAreaId = parkingAreaId;
+      }
+      
       const [sessionsResponse, slotResponse] = await Promise.all([
-        getRecords({ status: 'active', limit: 100 }),
+        getRecords(params),
         getFreeSlot()
       ]);
+
       const sessions = Array.isArray(sessionsResponse) ? sessionsResponse : (sessionsResponse.data || []);
       setActiveSessions(sessions);
       setSlotInfo(slotResponse);
+      console.log('[SlotMap] Fetched sessions for area:', parkingAreaId, 'Count:', sessions.length);
     } catch (error) {
       console.error("[SlotMap] Error fetching data:", error);
       if (error instanceof ApiError) {

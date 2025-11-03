@@ -42,8 +42,9 @@ const getVehicleIcon = (vehicleType?: string) => {
 };
 interface UserPanelProps {
   onNavigateToChatbot?: () => void;
+  areaId?: string;
 }
-const UserPanel = ({ onNavigateToChatbot }: UserPanelProps) => {
+const UserPanel = ({ onNavigateToChatbot, areaId: propAreaId }: UserPanelProps) => {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [activeSessions, setActiveSessions] = useState<ParkingToken[]>([]);
@@ -60,6 +61,28 @@ const UserPanel = ({ onNavigateToChatbot }: UserPanelProps) => {
     paymentMethod?: string;
     duration?: string;
   }>({});
+  const [parkingAreaId, setParkingAreaId] = useState<string | undefined>(propAreaId);
+
+  useEffect(() => {
+    // Priority: 1. URL param (propAreaId), 2. localStorage (employee_data), 3. undefined (public user)
+    if (propAreaId) {
+      setParkingAreaId(propAreaId);
+      console.log('[UserPanel] Using parking area from URL:', propAreaId);
+    } else {
+      // Get parking area ID from employee data if logged in as employee
+      const employeeData = localStorage.getItem('employee_data');
+      if (employeeData) {
+        try {
+          const employee = JSON.parse(employeeData);
+          setParkingAreaId(employee.parking_area_id);
+          console.log('[UserPanel] Using parking area from employee data:', employee.parking_area_id);
+        } catch (err) {
+          console.error('[UserPanel] Failed to parse employee data:', err);
+        }
+      }
+    }
+  }, [propAreaId]);
+
   useEffect(() => {
     const initializeData = async () => {
       setInitialLoading(true);
@@ -72,12 +95,18 @@ const UserPanel = ({ onNavigateToChatbot }: UserPanelProps) => {
       fetchSlotInfo();
     }, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [parkingAreaId]);  // Re-fetch when parking area changes
+
   const fetchActiveSessions = async () => {
     try {
-      const response = await getRecords({ status: 'active', limit: 100 });
+      const params: any = { status: 'active', limit: 100 };
+      if (parkingAreaId) {
+        params.parkingAreaId = parkingAreaId;
+      }
+      const response = await getRecords(params);
       const sessions = Array.isArray(response) ? response : (response.data || []);
       setActiveSessions(sessions);
+      console.log('[UserPanel] Fetched sessions for area:', parkingAreaId, 'Count:', sessions.length);
     } catch (error) {
       console.error("[UserPanel] Error fetching active sessions:", error);
     }
@@ -100,7 +129,11 @@ const UserPanel = ({ onNavigateToChatbot }: UserPanelProps) => {
       toast.info("Processing image...", {
         description: "Detecting vehicle number plate and type..."
       });
-      const sessionData = await registerEntry(base64Image);
+      
+      const sessionData = await registerEntry(base64Image, parkingAreaId ? {
+        parkingAreaId: parkingAreaId
+      } : undefined);
+      
       console.log('[UserPanel] Received session data:', sessionData);
       const vehicleTypeEmoji = sessionData.vehicleType === 'car' ? '🚗' : sessionData.vehicleType === 'bike' ? '🏍️' : '🚙';
       const vehicleTypeText = sessionData.vehicleType && sessionData.vehicleCategory 
@@ -199,6 +232,18 @@ const UserPanel = ({ onNavigateToChatbot }: UserPanelProps) => {
   return (
     <>
     <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+      {/* Parking Area Indicator */}
+      {parkingAreaId && (
+        <div className="mb-4 sm:mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <ParkingCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
+              Managing: <span className="font-bold">{parkingAreaId}</span>
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Payment Success Animation */}
       <PaymentSuccessAnimation
         isOpen={showSuccessAnimation}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Header from "@/components/Header";
 import UserPanel from "@/components/UserPanel";
 import AdminPanel from "@/components/AdminPanel";
@@ -9,6 +9,7 @@ import { SplineChatbotAvatar } from "@/components/SplineChatbotAvatar";
 const Index = () => {
   const [activePanel, setActivePanel] = useState<'user' | 'admin' | 'slotmap'>('user');
   const navigate = useNavigate();
+  const { areaId } = useParams<{ areaId?: string }>();
   const handleChatbotClick = () => {
     toast.info('Login Required', {
       description: 'Please login to access the AI Assistant...',
@@ -27,9 +28,9 @@ const Index = () => {
       </div>
       <Header activePanel={activePanel} onPanelChange={setActivePanel} />
       <main className="transition-all duration-300 ease-in-out animate-fade-in">
-        {activePanel === 'user' && <UserPanel onNavigateToChatbot={handleChatbotClick} />}
+        {activePanel === 'user' && <UserPanel onNavigateToChatbot={handleChatbotClick} areaId={areaId} />}
         {activePanel === 'admin' && <AdminPanel />}
-        {activePanel === 'slotmap' && <SlotMap onNavigateToChatbot={handleChatbotClick} />}
+        {activePanel === 'slotmap' && <SlotMap onNavigateToChatbot={handleChatbotClick} areaId={areaId} />}
       </main>
       {/* Chatbot Avatar: show on User and Slot Map views */}
       {(activePanel === 'user' || activePanel === 'slotmap') && (
