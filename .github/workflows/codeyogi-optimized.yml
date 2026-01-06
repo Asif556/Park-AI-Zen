@@ -1,0 +1,84 @@
+yml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Cache Node.js dependencies
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Security scanning and dependency checks
+        run: |
+          npm audit
+          npm outdated
+
+      - name: Test
+        run: npm run test
+
+      - name: Deploy to production
+        env:
+          PROD_ENV: production
+        run: |
+          echo "Deploying to $PROD_ENV environment"
+          # Add deployment script here
+
+    # Error handling and notifications
+    if: ${{ failure() }}
+    steps:
+      - name: Notify on failure
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure
+          path: .
+
+  # Optional: Add environment-specific configurations
+  deploy-dev:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy
+    steps:
+      - name: Deploy to dev environment
+        env:
+          DEV_ENV: dev
+        run: |
+          echo "Deploying to $DEV_ENV environment"
+          # Add deployment script here
+
+  deploy-stg:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy
+    steps:
+      - name: Deploy to staging environment
+        env:
+          STG_ENV: staging
+        run: |
+          echo "Deploying to $STG_ENV environment"
+          # Add deployment script here
