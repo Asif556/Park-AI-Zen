@@ -1,0 +1,96 @@
+yml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Cache Node.js dependencies
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Security scanning and dependency checks
+        run: |
+          npm audit
+          npm outdated
+
+      - name: Test
+        run: npm run test
+
+      - name: Deploy to production
+        env:
+          PROD_ENV: production
+        run: |
+          echo "Deploying to $PROD_ENV environment"
+          # Add deployment script here
+
+    # Error handling and notifications
+    if: ${{ failure() }}
+    steps:
+      - name: Notify on failure
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure
+          path: .
+
+  # Optional: Add environment-specific configurations
+  staging-deploy:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/staging' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Cache Node.js dependencies
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to staging
+        env:
+          STAGING_ENV: staging
+        run: |
+          echo "Deploying to $STAGING_ENV environment"
+          # Add deployment script here
